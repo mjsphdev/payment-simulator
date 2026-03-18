@@ -3,7 +3,7 @@
 Post {{PaymentSimulator.Api_HostAddress}}/api/payment/process
 Content-Type: application/json
 {
-  "paymentId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "paymentId": "3fa85f64-5717-4562-b3fc-2c963f66afa8",
   "amount": 199.99,
   "currency": "PHP",
   "paymentMethod": {

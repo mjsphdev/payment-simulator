@@ -34,6 +34,6 @@ public class PaymentController : ControllerBase
             Reference = paymentRequest.Reference
         });
 
-        return Ok("Payment processed successfully.");
+        return Ok("Payment submitted successfully.");
     }
 }

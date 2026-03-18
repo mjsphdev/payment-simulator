@@ -1,10 +1,12 @@
+using PaymentSimulator.API.Configurations;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
 builder.Services.AddOpenApi();
+
+await builder.Services.AddSendOnlyNServiceBus("PaymentSimulator.API");
 
 var app = builder.Build();
 

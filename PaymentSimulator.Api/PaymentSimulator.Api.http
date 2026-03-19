@@ -1,9 +1,9 @@
 @PaymentSimulator.Api_HostAddress = http://localhost:5075
 
-Post {{PaymentSimulator.Api_HostAddress}}/api/payment/process
+Post {{PaymentSimulator.Api_HostAddress}}/api/payment/submit
 Content-Type: application/json
 {
-  "paymentId": "3fa85f64-5717-4562-b3fc-2c963f66afa8",
+  "paymentId": "3fa85f64-5717-4562-b3fc-2c963f66afe8",
   "amount": 199.99,
   "currency": "PHP",
   "paymentMethod": {

@@ -5,7 +5,9 @@ using PaymentSimulator.ServiceBus.Contracts;
 namespace PaymentSimulator.ServiceBus.Payment;
 
 public class PaymentSagaPolicy : Saga<PaymentSagaPolicyData>,
-    IAmStartedByMessages<PaymentReceivedEvent>
+    IAmStartedByMessages<PaymentReceivedEvent>,
+    IHandleMessages<PaymentSuccessEvent>,
+    IHandleMessages<PaymentFailedEvent>
 {
     private readonly ILogger<PaymentSagaPolicy> _logger;
 
@@ -17,7 +19,9 @@ public class PaymentSagaPolicy : Saga<PaymentSagaPolicyData>,
     protected override void ConfigureHowToFindSaga(SagaPropertyMapper<PaymentSagaPolicyData> mapper)
     {
         mapper.MapSaga(sagaData => sagaData.PaymentId)
-            .ToMessage<PaymentReceivedEvent>(message => message.PaymentId);
+            .ToMessage<PaymentReceivedEvent>(message => message.PaymentId)
+            .ToMessage<PaymentSuccessEvent>(message => message.PaymentId)
+            .ToMessage<PaymentFailedEvent>(message => message.PaymentId);
     }
     public async Task Handle(PaymentReceivedEvent message, IMessageHandlerContext context)
     {
@@ -35,11 +39,24 @@ public class PaymentSagaPolicy : Saga<PaymentSagaPolicyData>,
             Data.IsPaymentProcessed = true;
             _logger.LogInformation("[{PaymentId}] Payment processed successfully", message.PaymentId);
 
-
+            await context.Publish(new PaymentSuccessEvent
+            {
+                PaymentId = message.PaymentId,
+                Amount = message.Amount,
+                Currency = message.Currency
+            });
         }
         else
         {
             _logger.LogError("[{PaymentId}] Payment processing failed: {Reason}", message.PaymentId, result.FailureReason);
+
+            await context.Publish(new PaymentFailedEvent
+            {
+                PaymentId = message.PaymentId,
+                Amount = message.Amount,
+                Currency = message.Currency,
+                FailureReason = "Sample failed reason: Card was locked."
+            });
         }
         return;
     }
@@ -75,5 +92,25 @@ public class PaymentSagaPolicy : Saga<PaymentSagaPolicyData>,
         );
 
         return StripeSimulationResult.Failure(reason);
+    }
+
+    public Task Handle(PaymentSuccessEvent message, IMessageHandlerContext context)
+    {
+        _logger.LogInformation("[{PaymentId}] Payment successfully cleared!", message.PaymentId);
+
+        _logger.LogInformation("[{PaymentId}] Marking payment as COMPLETED", message.PaymentId);
+
+        _logger.LogInformation("[{PaymentId}] Sending receipt email (simulated)", message.PaymentId);
+
+        MarkAsComplete();
+
+        return Task.CompletedTask;
+    }
+
+    public Task Handle(PaymentFailedEvent message, IMessageHandlerContext context)
+    {
+        _logger.LogWarning("[{PaymentId}] Notifying customer of failure... [{FailureReason}]", message.PaymentId, message.FailureReason);
+
+        return Task.CompletedTask;
     }
 }

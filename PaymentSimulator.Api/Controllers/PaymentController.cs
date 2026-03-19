@@ -17,7 +17,7 @@ public class PaymentController : ControllerBase
         _logger = logger;
     }
 
-    [HttpPost("process")]
+    [HttpPost("submit")]
     public async Task<IActionResult> SubmitPaymentAsync([FromBody] PaymentRequest paymentRequest)
     {
         _logger.LogInformation("[{PaymentId}] Payment saved to DATABASE (simulated)...", paymentRequest.PaymentId);

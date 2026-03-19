@@ -11,7 +11,27 @@ The project simulates how modern distributed systems handle asynchronous payment
 * Event-driven communication
 * Multiple entry points (REST API and GraphQL)
 
-> ⚠️ This project is a simulation for learning and demonstration purposes. No real payment gateway or database is used.
+> ⚠️ This project intentionally simulates external systems (e.g., payment gateways and persistence) to focus on architectural patterns such as event-driven design and Saga orchestration.
+
+---
+
+## ▶️ How to Run
+
+1. Run `PaymentSimulator.ServiceBus`
+2. Run `PaymentSimulator.API`
+3. Send request via REST or GraphQL
+4. Observe console logs for event flow
+
+---
+
+## 💡 Why This Project
+
+Modern payment systems are complex and rely heavily on asynchronous processing and distributed messaging.
+
+This project was created to simulate how such systems work in practice, focusing on:
+- Reliability (idempotency)
+- Scalability (event-driven design)
+- Maintainability (loose coupling)
 
 ---
 
@@ -29,8 +49,8 @@ The system is composed of two main parts:
 Responsibilities:
 
 * Accept payment requests
-* Validate input (including `PaymentId`)
-* Publish `PaymentReceived` event
+* Save to Database (simulated)
+* Publish `PaymentReceivedEvent`
 
 ---
 
@@ -53,7 +73,7 @@ Responsibilities:
 ```text
 Client → API / GraphQL
        → Save to Database (simulated)
-       → Publish PaymentReceived
+       → Publish PaymentReceivedEvent
        → Saga starts
        → Check idempotency
        → Simulate payment processing
@@ -66,7 +86,7 @@ Client → API / GraphQL
 
 ## 📌 Supported Events
 
-* `PaymentReceived`
+* `PaymentReceivedEvent`
 * `PaymentSuccessEvent`
 * `PaymentFailedEvent`
 
@@ -75,6 +95,8 @@ Client → API / GraphQL
 ## 💳 Sample Requests
 
 ### 🔹 GraphQL Mutation
+
+![Alt text for the image](Graphql-SampleRequest.png)
 
 ```graphql
 mutation SubmitPayment {
@@ -102,7 +124,9 @@ mutation SubmitPayment {
 
 ### 🔹 REST API
 
-**POST /payments**
+![Alt text for the image](Rest-SampleRequest.png)
+
+**POST /api/payment/submit**
 
 ```json
 {
@@ -131,7 +155,7 @@ The system ensures that duplicate requests with the same `PaymentId` are not pro
 Example behavior:
 
 ```text
-[PAY-123] Duplicate request skipped (idempotent)
+[3fa85f64-5717-4562-b3fc-2c963f66afe8] Duplicate request skipped (idempotent)
 ```
 
 ---
@@ -141,7 +165,6 @@ Example behavior:
 Instead of integrating real providers, the system simulates payment gateways such as:
 
 * Credit Card (Stripe-like)
-* PayPal
 
 Processing includes:
 
@@ -155,7 +178,7 @@ Processing includes:
 
 The `PaymentSaga` is responsible for:
 
-* Starting on `PaymentReceived`
+* Starting on `PaymentReceivedEvent`
 * Tracking processing state
 * Preventing duplicate execution
 * Publishing:
@@ -183,17 +206,17 @@ The `PaymentSaga` is responsible for:
 ## 🖥️ Sample Console Output
 
 ```text
-[PAY-123] Payment received. Processing via Stripe (simulated)...
-[PAY-123] Stripe simulation SUCCESS for 199.99 PHP (Visa ****4242)
-[PAY-123] Payment successfully completed!
+[3fa85f64-5717-4562-b3fc-2c963f66afe8] Payment received. Processing via Stripe (simulated)...
+[3fa85f64-5717-4562-b3fc-2c963f66afe8] Stripe simulation SUCCESS for 199.99 PHP (Visa ****4242)
+[3fa85f64-5717-4562-b3fc-2c963f66afe8] Payment successfully completed!
 ```
 
 OR
 
 ```text
-[PAY-123] Payment received. Processing via Stripe (simulated)...
-[PAY-123] Stripe simulation FAILED: Insufficient funds
-[PAY-123] Payment failed: Insufficient funds
+[3fa85f64-5717-4562-b3fc-2c963f66afe8] Payment received. Processing via Stripe (simulated)...
+[3fa85f64-5717-4562-b3fc-2c963f66afe8] Stripe simulation FAILED: Insufficient funds
+[3fa85f64-5717-4562-b3fc-2c963f66afe8] Payment failed: Insufficient funds
 ```
 
 ---
@@ -223,11 +246,14 @@ PaymentSimulator.sln
 
 ## ⚠️ Disclaimer
 
-This project is intended for educational and demonstration purposes only.
+This project intentionally simulates external systems such as payment gateways and data persistence.
 
-* No real payment gateway integration
-* No sensitive data handling
-* No production-grade persistence
+The focus is on demonstrating architectural patterns including:
+- Event-driven design
+- Saga-based orchestration
+- Idempotent message handling
+
+No real payment processing or sensitive data is involved.
 
 ---
 

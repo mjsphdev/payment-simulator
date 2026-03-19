@@ -18,7 +18,7 @@ public class PaymentController : ControllerBase
     }
 
     [HttpPost("process")]
-    public async Task<IActionResult> ProcessPaymentAsync([FromBody] PaymentRequest paymentRequest)
+    public async Task<IActionResult> SubmitPaymentAsync([FromBody] PaymentRequest paymentRequest)
     {
         _logger.LogInformation("[{PaymentId}] Payment saved to DATABASE (simulated)...", paymentRequest.PaymentId);
 

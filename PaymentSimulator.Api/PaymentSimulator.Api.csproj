@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+  	 <PackageReference Include="HotChocolate" />
+  	 <PackageReference Include="HotChocolate.AspNetCore" />
+  	 <PackageReference Include="HotChocolate.Types" />
+  	 <PackageReference Include="HotChocolate.Types.Analyzers" />
   	 <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
   	 <PackageReference Include="NServiceBus" />
   	 <PackageReference Include="NServiceBus.Extensions.Hosting" />
